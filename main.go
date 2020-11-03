@@ -8,6 +8,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -17,7 +18,10 @@ import (
 	"github.com/jinzhu/now"
 )
 
-const apiUrl string = "https://www.ifirma.pl/iapi/fakturakraj.json"
+const (
+	apiUrl         string = "https://www.ifirma.pl/iapi/fakturakraj.json"
+	downloadUrlTpl string = "https://www.ifirma.pl/iapi/fakturakraj/%d.pdf.single"
+)
 
 func main() {
 
@@ -111,7 +115,47 @@ func main() {
 		SetBody(out).
 		Post(apiUrl)
 
-	fmt.Println(resp)
+	var details IFResponse
+	err = json.Unmarshal(resp.Body(), &details)
+	if err != nil {
+		log.Println("Failed to read response", err)
+		return
+	}
+
+	fmt.Println(details.Response.Msg, fmt.Sprint("(", details.Response.Code, ")"))
+	if details.Response.Code == 0 && details.Response.ID > 0 {
+		fmt.Println("Downloading invoice..")
+		downloadUrl := fmt.Sprintf(downloadUrlTpl, details.Response.ID)
+		// https://www.ifirma.pl/iapi/fakturakraj/1244521.pdf.single
+
+		hash := hmac.New(sha1.New, hashToken)
+		io.WriteString(hash, downloadUrl)
+		io.WriteString(hash, iEmail)
+		io.WriteString(hash, "faktura")
+		sum := hex.EncodeToString(hash.Sum(nil))
+
+		auth := "IAPIS user=" + iEmail + ", hmac-sha1=" + sum
+
+		resp, err := client.R().
+			SetHeader("Accept", "application/pdf").
+			SetHeader("Content-Type", "application/pdf; charset=UTF-8").
+			SetHeader("Authentication", auth).
+			SetBody(out).
+			Get(downloadUrl)
+
+		if err != nil {
+			log.Println("Failed to download PDF but Invoice was generated", err)
+			return
+		}
+
+		filename := fmt.Sprintf("fv-%d.pdf", details.Response.ID)
+		if err = ioutil.WriteFile(filename, resp.Body(), 0600); err != nil {
+			log.Println("Failed to write PDF to disk", err)
+			return
+		}
+
+		log.Println("File saved to", filename)
+	}
 }
 
 func extractDate(d string) string {

@@ -46,3 +46,13 @@ type IFRequestPos struct {
 	Unit     string  `json:"Jednostka"`
 	VatType  string  `json:"TypStawkiVat"`
 }
+
+type IFResponse struct {
+	Response IFResponseDetails `json:"response"`
+}
+
+type IFResponseDetails struct {
+	ID   uint64 `json:"Identyfikator"`
+	Code int    `json:"Kod"`
+	Msg  string `json:"Informacja"`
+}
