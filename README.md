@@ -24,6 +24,7 @@ invoice "invoice_ID" {
     name     = "Name of the service/product"
     quantity = 1
     unit     = "szt"
+    gtu      = "12" # one of ["01",...,"12"] or "BRAK" - this parameter is optional
   }
 }
 

@@ -66,6 +66,10 @@ func main() {
 		return
 	}
 
+	gtu := invoice.Positions[0].GTU
+	if gtu == "" {
+		gtu = "BRAK"
+	}
 	req := IFRequest{
 		Paid:          0,
 		PaidDoc:       0,
@@ -85,6 +89,7 @@ func main() {
 				Name:     invoice.Positions[0].Name,
 				Unit:     invoice.Positions[0].Unit,
 				VatType:  "PRC",
+				GTU:      gtu,
 			},
 		},
 	}

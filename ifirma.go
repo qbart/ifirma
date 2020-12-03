@@ -21,6 +21,7 @@ type IFPos struct {
 	Name     string `hcl:"name"`
 	Quantity int    `hcl:"quantity"`
 	Unit     string `hcl:"unit"`
+	GTU      string `hcl:"gtu,optional"`
 }
 
 // https://api.ifirma.pl/wystawianie-faktury-sprzedaz%cc%87y-krajowej-towarow-i-uslug/
@@ -45,6 +46,7 @@ type IFRequestPos struct {
 	Name     string  `json:"NazwaPelna"`
 	Unit     string  `json:"Jednostka"`
 	VatType  string  `json:"TypStawkiVat"`
+	GTU      string  `json:"GTU"`
 }
 
 type IFResponse struct {
