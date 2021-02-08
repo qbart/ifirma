@@ -25,7 +25,10 @@ invoice "invoice_ID" {
     quantity = 1
     unit     = "szt"
     gtu      = "12" # one of ["01",...,"12"] or "BRAK" - this parameter is optional
+    vat      = 0.23
   }
+
+  comment = "Optional comment at the bottom of the invoice"
 }
 
 invoice "invoice_ID2" {
