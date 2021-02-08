@@ -81,9 +81,10 @@ func main() {
 		PaymentMethod: "PRZ",
 		SignatureType: "BPO",
 		ContractorID:  invoice.To,
+		Comment:       invoice.Comment,
 		Positions: []IFRequestPos{
 			IFRequestPos{
-				Vat:      0.23,
+				Vat:      invoice.Positions[0].Vat,
 				Quantity: invoice.Positions[0].Quantity,
 				Price:    *flagPrice,
 				Name:     invoice.Positions[0].Name,

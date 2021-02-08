@@ -15,13 +15,15 @@ type IFInvoice struct {
 	IssuedAt  string  `hcl:"issued_at"`
 	SoldAt    string  `hcl:"sold_at"`
 	Positions []IFPos `hcl:"pos,block"`
+	Comment   string  `hcl:"comment,optional"`
 }
 
 type IFPos struct {
-	Name     string `hcl:"name"`
-	Quantity int    `hcl:"quantity"`
-	Unit     string `hcl:"unit"`
-	GTU      string `hcl:"gtu,optional"`
+	Name     string  `hcl:"name"`
+	Quantity int     `hcl:"quantity"`
+	Unit     string  `hcl:"unit"`
+	GTU      string  `hcl:"gtu,optional"`
+	Vat      float64 `hcl:"vat"`
 }
 
 // https://api.ifirma.pl/wystawianie-faktury-sprzedaz%cc%87y-krajowej-towarow-i-uslug/
@@ -36,6 +38,7 @@ type IFRequest struct {
 	PaymentMethod string         `json:"SposobZaplaty"`
 	SignatureType string         `json:"RodzajPodpisuOdbiorcy"`
 	ContractorID  string         `json:"IdentyfikatorKontrahenta"`
+	Comment       string         `json:"Uwagi"`
 	Positions     []IFRequestPos `json:"Pozycje"`
 }
 
