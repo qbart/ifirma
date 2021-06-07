@@ -28,6 +28,7 @@ func main() {
 	flagCfg := flag.String("config", fmt.Sprint(os.Getenv("HOME"), "/.config/ifirma.hcl"), "Path to config file")
 	flagInvoice := flag.String("invoice", "", "Invoice ID")
 	flagPrice := flag.Float64("net_price", 0, "Net Price")
+	flagDate := flag.String("date", "", "Issued at")
 
 	flag.Parse()
 
@@ -75,8 +76,8 @@ func main() {
 		PaidDoc:       0,
 		IssueType:     "NET",
 		BankAccountNo: strings.ReplaceAll(root.Payment.Bank, " ", ""),
-		IssuedAt:      extractDate(invoice.IssuedAt),
-		SoldAt:        extractDate(invoice.SoldAt),
+		IssuedAt:      firstNonEmpty(*flagDate, extractDate(invoice.IssuedAt)),
+		SoldAt:        firstNonEmpty(*flagDate, extractDate(invoice.SoldAt)),
 		SoldAtFormat:  "DZN",
 		PaymentMethod: "PRZ",
 		SignatureType: "BPO",
@@ -94,6 +95,8 @@ func main() {
 			},
 		},
 	}
+
+	fmt.Printf("Issued at: %v, sold at: %v\n", req.IssuedAt, req.SoldAt)
 
 	out, err := json.Marshal(req)
 	if err != nil {
@@ -162,6 +165,16 @@ func main() {
 
 		log.Println("File saved to", filename)
 	}
+}
+
+func firstNonEmpty(ss ...string) string {
+	empty := ""
+	for _, s := range ss {
+		if s != empty {
+			return s
+		}
+	}
+	return empty
 }
 
 func extractDate(d string) string {
